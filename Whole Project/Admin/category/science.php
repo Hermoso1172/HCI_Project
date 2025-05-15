@@ -254,6 +254,10 @@
                                                         ?>
                                                         <span style="color: green;"><?= $recent_logs['status'];?></span>
                                                         <?php
+                                                    }elseif($recent_logs['status'] == "Pending"){
+                                                        ?>
+                                                        <span style="color: blue;"><?= $recent_logs['status'];?></span>
+                                                        <?php
                                                     }else{
                                                         ?>
                                                         <span style="color: red;"><?= $recent_logs['status'];?></span>
@@ -295,7 +299,7 @@
                                                                 <button style="background-color: red; color: white; border: none; padding: 5px; width: 80px;display: flex;
                                                                     justify-content: space-around; align-items: center;cursor: pointer;">
                                                                         <i class="fa-solid fa-circle-xmark"></i>
-                                                                        Pending
+                                                                        Archive
                                                                 </button>
                                                             </a>
                                                             <?php

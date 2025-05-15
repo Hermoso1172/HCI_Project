@@ -152,13 +152,12 @@
                                     <option value="author_id">Author</option>
                                     <option value="Highest">Highest downloaded books</option>
                                     <option value="Lowest">Lowest downloaded books</option>
-                                    <option value="Pending">Pending</option>
-                                    <option value="Approved">Approved</option>
                                 </select>
                             </form>
 
                             <!-- CATEGORY -->
                              <ol style="display: flex; color: white; font-weight: bold; gap: 40px;margin-right: 10px;">
+                                <ul style="color:black">Category :</ul>
                                 <a href="science.php" style="text-decoration: none; color: white;"><ul style="padding: 0; cursor: pointer;">Science</ul></a>
                                 <a href="novel.php" style="text-decoration: none; color: white;"><ul style="padding: 0; cursor: pointer;">Novel</ul></a>
                                 <a href="mystery.php" style="text-decoration: none; color: white;"><ul style="padding: 0; cursor: pointer;">Mystery</ul></a>
@@ -218,12 +217,6 @@
                                     }elseif ($_POST['orderBY'] == "Lowest") {
                                         $oderBY = 'downloads';
                                          $selects_logs = mysqli_query($conn, "SELECT * FROM books WHERE `genre`= 'Science' ORDER BY $oderBY ASC");
-                                    }elseif($_POST['orderBY'] == "Pending"){
-                                    
-                                         $selects_logs = mysqli_query($conn, "SELECT * FROM books WHERE `genre`= 'Science' AND status = 'Pending'");
-                                    }elseif($_POST['orderBY'] == "Approved"){
-                                       
-                                         $selects_logs = mysqli_query($conn, "SELECT * FROM books WHERE `genre`= 'Science' AND status = 'Approved'");
                                     }
                                     }else{
                                          $selects_logs = mysqli_query($conn, "SELECT * FROM books WHERE `genre`= 'Science' ORDER BY author_id");
@@ -266,14 +259,39 @@
                                                 ?></td>
                                                 
                                             <td style="display: flex; justify-content: center; gap:10px">
-                                                <a href="view-book/view.php?book=<?= $recent_logs['book_id']; ?>">
-                                                    <button style="background-color: #3c554c; color: white; border: none; padding: 5px; width: 60px;display: flex;
-                                                        justify-content: space-around; align-items: center;cursor: pointer;">
-                                                        <i class="fa-solid fa-eye"></i>
-                                                            View
-                                                    </button>
-                                                </a>
+                                                    <!-- REJECT BUTTON -->
+                                                    <?php
+                                                        if($recent_logs['status'] == "Approved" || $recent_logs['status'] == "Archive" || $recent_logs['status'] == "Rejected" ){
+                                                            
+                                                            ?>
+
+                                                               
+                                                                
+                                                                <button style="background-color: gray; color: white; border: none; padding: 5px; width: 80px;display: flex;
+                                                                    justify-content: space-around; align-items: center;cursor:not-allowed;"
+                                                                     onclick="alert('You cannot Reject an Archive one')">
+                                                                        <i class="fa-solid fa-square-check"></i>
+                                                                        Reject
+                                                                     
+                                                                </button>
+                                                      
+                                                           
+                                                          
+                                                            <?php
+                                                        }else{
+                                                            ?>
+                                                            <a href="fnc/pending.php?book=<?= $recent_logs['book_id']; ?>">
+                                                                <button style="background-color: maroon; color: white; border: none; padding: 5px; width: 80px;display: flex;
+                                                                    justify-content: space-around; align-items: center;cursor: pointer;">
+                                                                        <i class="fa-solid fa-circle-xmark"></i>
+                                                                        Reject
+                                                                </button>
+                                                            </a>
+                                                            <?php
+                                                        }
+                                                    ?>
                                                 
+                                                    <!-- ARCHIVE AND APPROVED  BUTTON -->
                                                     <?php
                                                         if($recent_logs['status'] == "Pending"){
                                                             
@@ -305,6 +323,15 @@
                                                             <?php
                                                         }
                                                     ?>
+
+                                                    <!-- VIEW BUTTON -->
+                                                    <a href="view-book/view.php?book=<?= $recent_logs['book_id']; ?>">
+                                                        <button style="background-color:rgb(40, 75, 109); color: white; border: none; padding: 5px; width: 30px;display: flex;
+                                                            justify-content: space-around; align-items: center;cursor: pointer;">
+                                                            <i class="fa-solid fa-eye"></i>
+                                                                
+                                                        </button>
+                                                    </a>
                                               
                                             </td>
                                         
@@ -320,6 +347,36 @@
                                         ?>
                                 </tbody>
                              </table>
+                        </div>
+
+                        <div class="" style="display: flex; justify-content:end; align-items:center">
+                            <p style="margin-right:10px; font-weight:bold">Book status: </p>
+
+                            <a href="book-status/book_status.php?s=<?= 'Pending&c=Science';?>"
+                                style="margin-left: 10px;background-color: #3c554c; align-items: center; border-radius: 10px; display:flex; justify-content:center;box-shadow:5px 5px 5px rgba(0,0,0,0.8)">
+                                <button style="width: 100%; border: none;background-color: transparent; color: white; cursor: pointer; padding:10px; ">
+                                    Pending
+                                </button>
+                            </a>
+                            <a href="book-status/book_status.php?s=<?= 'Approved&c=Science';?>"
+                                style="margin-left: 10px;background-color: #3c554c; align-items: center; border-radius: 10px; display:flex; justify-content:center;box-shadow:5px 5px 5px rgba(0,0,0,0.8)">
+                                <button style="width: 100%; border: none;background-color: transparent; color: white; cursor: pointer; padding:10px;">
+                                    Approved
+                                </button>
+                            </a>
+                            <a href="book-status/book_status.php?s=<?= 'Rejected&c=Science';?>"
+                                style="margin-left: 10px;background-color: #3c554c; align-items: center; border-radius: 10px; display:flex; justify-content:center;box-shadow:5px 5px 5px rgba(0,0,0,0.8)">
+                                <button style="width: 100%; border: none;background-color: transparent; color: white; cursor: pointer; padding:10px;">
+                                    Rejected
+                                </button>
+                            </a>
+                            <a href="book-status/book_status.php?s=<?= 'Archive&c=Science';?>"
+                                style="margin-left: 10px;background-color: #3c554c; align-items: center; border-radius: 10px; display:flex; justify-content:center;box-shadow:5px 5px 5px rgba(0,0,0,0.8)">
+                                <button style="width: 100%; border: none;background-color: transparent; color: white; cursor: pointer; padding:10px;">
+                                    Archive
+                                </button>
+                            </a>
+                          
                         </div>
                       
                 </div>

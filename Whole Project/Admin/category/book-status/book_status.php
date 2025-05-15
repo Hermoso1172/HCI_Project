@@ -1,5 +1,7 @@
 <?php
     session_start();
+    $statusofBook = $_GET['s'];
+    $category = $_GET['c'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -7,7 +9,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="../admin.css">
+    <link rel="stylesheet" href="../../admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     
 </head>
@@ -36,8 +38,9 @@
 </style>
 <body>
     <?php
-    require '../db/db.php';
+    require '../../db/db.php';
     $id = $_SESSION['ID'];
+    
 
     $admin_infos = mysqli_query($conn, "SELECT * FROM admin_account WHERE adminID = $id");
 
@@ -52,7 +55,7 @@
                 <img src="../../images/weblogo.png" alt="" style="width: 40px;height: 40px; border-radius: 0; border: none;">
                 <p style="font-size: 15px;margin-left: 4px;font-weight: bold;">BOOK <span style="color: #A1BE95;">ROOM</span></p>
             </div>
-            <img src="../images/<?php echo $results['profile_pic'] ?>" alt="">
+            <img src="../../images/<?php echo $results['profile_pic'] ?>" alt="">
             <p style="font-weight: bold;">
                 <?php
                     if(strlen($results['fname']) < 6){
@@ -128,7 +131,7 @@
                         <!-- SEARCH BAR -->
                         <div class="" style="display: flex; justify-content: space-between;">
                             <div class="">   
-                                <p style="font-weight: bold; color:white">MYSTERY BOOK</p>
+                                <p style="font-weight: bold; color:white">SCIENCE BOOK</p>
                             </div>
                             <div class="" style=" justify-content: end; display: flex;">
                                 <i class="fa-solid fa-microphone" style="display: flex; align-items: center; display: flex;"></i>
@@ -158,13 +161,13 @@
                             <!-- CATEGORY -->
                              <ol style="display: flex; color: white; font-weight: bold; gap: 40px;margin-right: 10px;">
                                 <ul style="color:black">Category :</ul>
-                                <a href="science.php" style="text-decoration: none; color: white;"><ul style="padding: 0; cursor: pointer;">Science</ul></a>
-                                <a href="novel.php" style="text-decoration: none; color: white;"><ul style="padding: 0; cursor: pointer;">Novel</ul></a>
-                                <a href="mystery.php" style="text-decoration: none; color: white;"><ul style="padding: 0; cursor: pointer;">Mystery</ul></a>
-                                <a href="narrative.php" style="text-decoration: none; color: white;"><ul style="padding: 0; cursor: pointer;">Narrative</ul></a>
-                                <a href="fiction.php" style="text-decoration: none; color: white;"><ul style="padding: 0; cursor: pointer;">Fiction</ul></a>
-                                <a href="history.php" style="text-decoration: none; color: white;"><ul style="padding: 0; cursor: pointer;">History</ul></a>
-                                <a href="fantasy.php" style="text-decoration: none; color: white;"><ul style="padding: 0; cursor: pointer;">Fantasy</ul></a>
+                                <a href="../science.php" style="text-decoration: none; color: white;"><ul style="padding: 0; cursor: pointer;">Science</ul></a>
+                                <a href="../novel.php" style="text-decoration: none; color: white;"><ul style="padding: 0; cursor: pointer;">Novel</ul></a>
+                                <a href="../mystery.php" style="text-decoration: none; color: white;"><ul style="padding: 0; cursor: pointer;">Mystery</ul></a>
+                                <a href="../narrative.php" style="text-decoration: none; color: white;"><ul style="padding: 0; cursor: pointer;">Narrative</ul></a>
+                                <a href="../fiction.php" style="text-decoration: none; color: white;"><ul style="padding: 0; cursor: pointer;">Fiction</ul></a>
+                                <a href="../history.php" style="text-decoration: none; color: white;"><ul style="padding: 0; cursor: pointer;">History</ul></a>
+                                <a href="../fantasy.php" style="text-decoration: none; color: white;"><ul style="padding: 0; cursor: pointer;">Fantasy</ul></a>
                              </ol>
 
                              <!-- CATEGORY WHEN THE SCREEN IS SMALL -->
@@ -207,19 +210,20 @@
                                
                                     
                                      <?php
+                                     
                                     if(isset($_POST['orderBY'])){
                                          if($_POST['orderBY'] == "author_id" || $_POST['orderBY'] == "book_id" || $_POST['orderBY'] == "title"){
                                             $oderBY = $_POST['orderBY'];
-                                         $selects_logs = mysqli_query($conn, "SELECT * FROM books WHERE `genre`= 'Mystery' ORDER BY $oderBY");
+                                         $selects_logs = mysqli_query($conn, "SELECT * FROM books WHERE `genre`= '$category' AND status = '$statusofBook' ORDER BY $oderBY");
                                     }elseif($_POST['orderBY'] == "Highest"){
                                          $oderBY = 'downloads';
-                                          $selects_logs = mysqli_query($conn, "SELECT * FROM books WHERE `genre`= 'Mystery' ORDER BY $oderBY DESC");
+                                          $selects_logs = mysqli_query($conn, "SELECT * FROM books WHERE `genre`= '$category' AND status = '$statusofBook' ORDER BY $oderBY DESC");
                                     }elseif ($_POST['orderBY'] == "Lowest") {
                                         $oderBY = 'downloads';
-                                         $selects_logs = mysqli_query($conn, "SELECT * FROM books WHERE `genre`= 'Mystery' ORDER BY $oderBY ASC");
+                                         $selects_logs = mysqli_query($conn, "SELECT * FROM books WHERE `genre`= '$category' AND status = '$statusofBook' ORDER BY $oderBY ASC");
                                     }
                                     }else{
-                                         $selects_logs = mysqli_query($conn, "SELECT * FROM books WHERE `genre`= 'Mystery' ORDER BY author_id");
+                                         $selects_logs = mysqli_query($conn, "SELECT * FROM books WHERE `genre`= '$category' AND status = '$statusofBook' ORDER BY author_id");
                                     }
                                     if(mysqli_num_rows($selects_logs) > 0){
                                     // TABLE
@@ -352,25 +356,26 @@
                         <div class="" style="display: flex; justify-content:end; align-items:center">
                             <p style="margin-right:10px; font-weight:bold">Book status: </p>
 
-                            <a href="book-status/book_status.php?s=<?= 'Pending&c=Mystery';?>"
+                            <a href="book_status.php?s=<?= 'Pending&c='.$category;?>"
                                 style="margin-left: 10px;background-color: #3c554c; align-items: center; border-radius: 10px; display:flex; justify-content:center;box-shadow:5px 5px 5px rgba(0,0,0,0.8)">
                                 <button style="width: 100%; border: none;background-color: transparent; color: white; cursor: pointer; padding:10px; ">
                                     Pending
                                 </button>
                             </a>
-                            <a href="book-status/book_status.php?s=<?= 'Approved&c=Mystery';?>"
+                           
+                            <a href="book_status.php?s=<?= 'Approved&c='.$category;?>"
                                 style="margin-left: 10px;background-color: #3c554c; align-items: center; border-radius: 10px; display:flex; justify-content:center;box-shadow:5px 5px 5px rgba(0,0,0,0.8)">
                                 <button style="width: 100%; border: none;background-color: transparent; color: white; cursor: pointer; padding:10px;">
                                     Approved
                                 </button>
                             </a>
-                            <a href="book-status/book_status.php?s=<?= 'Rejected&c=Mystery';?>"
+                            <a href="book_status.php?s=<?= 'Rejected&c='.$category;?>"
                                 style="margin-left: 10px;background-color: #3c554c; align-items: center; border-radius: 10px; display:flex; justify-content:center;box-shadow:5px 5px 5px rgba(0,0,0,0.8)">
                                 <button style="width: 100%; border: none;background-color: transparent; color: white; cursor: pointer; padding:10px;">
                                     Rejected
                                 </button>
                             </a>
-                            <a href="book-status/book_status.php?s=<?= 'Archive&c=Mystery';?>"
+                            <a href="book_status.php?s=<?= 'Archive&c='.$category;?>"
                                 style="margin-left: 10px;background-color: #3c554c; align-items: center; border-radius: 10px; display:flex; justify-content:center;box-shadow:5px 5px 5px rgba(0,0,0,0.8)">
                                 <button style="width: 100%; border: none;background-color: transparent; color: white; cursor: pointer; padding:10px;">
                                     Archive

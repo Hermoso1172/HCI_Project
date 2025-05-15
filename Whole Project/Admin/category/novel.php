@@ -38,6 +38,7 @@
     <?php
     require '../db/db.php';
     $id = $_SESSION['ID'];
+
     $admin_infos = mysqli_query($conn, "SELECT * FROM admin_account WHERE adminID = $id");
 
     while ($results = mysqli_fetch_assoc($admin_infos)) {
@@ -51,7 +52,7 @@
                 <img src="../../images/weblogo.png" alt="" style="width: 40px;height: 40px; border-radius: 0; border: none;">
                 <p style="font-size: 15px;margin-left: 4px;font-weight: bold;">BOOK <span style="color: #A1BE95;">ROOM</span></p>
             </div>
-            <img src="../../images/<?php echo $results['profile_pic'] ?>" alt="">
+            <img src="../images/<?php echo $results['profile_pic'] ?>" alt="">
             <p style="font-weight: bold;">
                 <?php
                     if(strlen($results['fname']) < 6){
@@ -151,13 +152,12 @@
                                     <option value="author_id">Author</option>
                                     <option value="Highest">Highest downloaded books</option>
                                     <option value="Lowest">Lowest downloaded books</option>
-                                    <option value="Pending">Pending</option>
-                                    <option value="Approved">Approved</option>
                                 </select>
                             </form>
 
                             <!-- CATEGORY -->
                              <ol style="display: flex; color: white; font-weight: bold; gap: 40px;margin-right: 10px;">
+                                <ul style="color:black">Category :</ul>
                                 <a href="science.php" style="text-decoration: none; color: white;"><ul style="padding: 0; cursor: pointer;">Science</ul></a>
                                 <a href="novel.php" style="text-decoration: none; color: white;"><ul style="padding: 0; cursor: pointer;">Novel</ul></a>
                                 <a href="mystery.php" style="text-decoration: none; color: white;"><ul style="padding: 0; cursor: pointer;">Mystery</ul></a>
@@ -217,12 +217,6 @@
                                     }elseif ($_POST['orderBY'] == "Lowest") {
                                         $oderBY = 'downloads';
                                          $selects_logs = mysqli_query($conn, "SELECT * FROM books WHERE `genre`= 'Novel' ORDER BY $oderBY ASC");
-                                    }elseif($_POST['orderBY'] == "Pending"){
-                                    
-                                         $selects_logs = mysqli_query($conn, "SELECT * FROM books WHERE `genre`= 'Novel' AND status = 'Pending'");
-                                    }elseif($_POST['orderBY'] == "Approved"){
-                                       
-                                         $selects_logs = mysqli_query($conn, "SELECT * FROM books WHERE `genre`= 'Novel' AND status = 'Approved'");
                                     }
                                     }else{
                                          $selects_logs = mysqli_query($conn, "SELECT * FROM books WHERE `genre`= 'Novel' ORDER BY author_id");
@@ -253,32 +247,69 @@
                                                         ?>
                                                         <span style="color: green;"><?= $recent_logs['status'];?></span>
                                                         <?php
+                                                    }elseif($recent_logs['status'] == "Pending"){
+                                                        ?>
+                                                        <span style="color: blue;"><?= $recent_logs['status'];?></span>
+                                                        <?php
                                                     }else{
                                                         ?>
                                                         <span style="color: red;"><?= $recent_logs['status'];?></span>
                                                         <?php
                                                     }
                                                 ?></td>
-                                                 
-                                            <td style="display: flex; justify-content: center; gap:10px">
-                                                <a href="view-book/view.php?book=<?= $recent_logs['book_id']; ?>">
-                                                    <button style="background-color: #3c554c; color: white; border: none; padding: 5px; width: 60px;display: flex;
-                                                        justify-content: space-around; align-items: center;cursor: pointer;">
-                                                        <i class="fa-solid fa-eye"></i>
-                                                            View
-                                                    </button>
-                                                </a>
                                                 
+                                            <td style="display: flex; justify-content: center; gap:10px">
+                                                    <!-- REJECT BUTTON -->
                                                     <?php
-                                                        if($recent_logs['status'] == "Pending"){
+                                                        if($recent_logs['status'] == "Approved" || $recent_logs['status'] == "Archive" || $recent_logs['status'] == "Rejected" ){
+                                                            
                                                             ?>
-                                                            <a href="fnc/approved.php?book=<?= $recent_logs['book_id']; ?>">
-                                                                <button style="background-color: #3c554c; color: white; border: none; padding: 5px; width: 80px;display: flex;
-                                                                    justify-content: space-around; align-items: center;cursor: pointer;">
+
+                                                               
+                                                                
+                                                                <button style="background-color: gray; color: white; border: none; padding: 5px; width: 80px;display: flex;
+                                                                    justify-content: space-around; align-items: center;cursor:not-allowed;"
+                                                                     onclick="alert('You cannot Reject an Archive one')">
                                                                         <i class="fa-solid fa-square-check"></i>
-                                                                        Approved
+                                                                        Reject
+                                                                     
+                                                                </button>
+                                                      
+                                                           
+                                                          
+                                                            <?php
+                                                        }else{
+                                                            ?>
+                                                            <a href="fnc/pending.php?book=<?= $recent_logs['book_id']; ?>">
+                                                                <button style="background-color: maroon; color: white; border: none; padding: 5px; width: 80px;display: flex;
+                                                                    justify-content: space-around; align-items: center;cursor: pointer;">
+                                                                        <i class="fa-solid fa-circle-xmark"></i>
+                                                                        Reject
                                                                 </button>
                                                             </a>
+                                                            <?php
+                                                        }
+                                                    ?>
+                                                
+                                                    <!-- ARCHIVE AND APPROVED  BUTTON -->
+                                                    <?php
+                                                        if($recent_logs['status'] == "Pending"){
+                                                            
+                                                            ?>
+
+                                                               
+                                                                
+                                                                <button style="background-color: #3c554c; color: white; border: none; padding: 5px; width: 80px;display: flex;
+                                                                    justify-content: space-around; align-items: center;cursor: pointer;"
+                                                                    data-id="<?= $recent_logs['book_id']; ?>" data-name="Clarence" onclick="handleClick(
+                                                                    this.getAttribute('data-id'))">
+                                                                        <i class="fa-solid fa-square-check"></i>
+                                                                        Approved
+                                                                     
+                                                                </button>
+                                                      
+                                                           
+                                                          
                                                             <?php
                                                         }else{
                                                             ?>
@@ -286,12 +317,21 @@
                                                                 <button style="background-color: red; color: white; border: none; padding: 5px; width: 80px;display: flex;
                                                                     justify-content: space-around; align-items: center;cursor: pointer;">
                                                                         <i class="fa-solid fa-circle-xmark"></i>
-                                                                        Pending
+                                                                        Archive
                                                                 </button>
                                                             </a>
                                                             <?php
                                                         }
                                                     ?>
+
+                                                    <!-- VIEW BUTTON -->
+                                                    <a href="view-book/view.php?book=<?= $recent_logs['book_id']; ?>">
+                                                        <button style="background-color:rgb(40, 75, 109); color: white; border: none; padding: 5px; width: 30px;display: flex;
+                                                            justify-content: space-around; align-items: center;cursor: pointer;">
+                                                            <i class="fa-solid fa-eye"></i>
+                                                                
+                                                        </button>
+                                                    </a>
                                               
                                             </td>
                                         
@@ -308,14 +348,70 @@
                                 </tbody>
                              </table>
                         </div>
+
+                        <div class="" style="display: flex; justify-content:end; align-items:center">
+                            <p style="margin-right:10px; font-weight:bold">Book status: </p>
+
+                            <a href="book-status/book_status.php?s=<?= 'Pending&c=Novel';?>"
+                                style="margin-left: 10px;background-color: #3c554c; align-items: center; border-radius: 10px; display:flex; justify-content:center;box-shadow:5px 5px 5px rgba(0,0,0,0.8)">
+                                <button style="width: 100%; border: none;background-color: transparent; color: white; cursor: pointer; padding:10px; ">
+                                    Pending
+                                </button>
+                            </a>
+                            <a href="book-status/book_status.php?s=<?= 'Approved&c=Novel';?>"
+                                style="margin-left: 10px;background-color: #3c554c; align-items: center; border-radius: 10px; display:flex; justify-content:center;box-shadow:5px 5px 5px rgba(0,0,0,0.8)">
+                                <button style="width: 100%; border: none;background-color: transparent; color: white; cursor: pointer; padding:10px;">
+                                    Approved
+                                </button>
+                            </a>
+                            <a href="book-status/book_status.php?s=<?= 'Rejected&c=Novel';?>"
+                                style="margin-left: 10px;background-color: #3c554c; align-items: center; border-radius: 10px; display:flex; justify-content:center;box-shadow:5px 5px 5px rgba(0,0,0,0.8)">
+                                <button style="width: 100%; border: none;background-color: transparent; color: white; cursor: pointer; padding:10px;">
+                                    Rejected
+                                </button>
+                            </a>
+                            <a href="book-status/book_status.php?s=<?= 'Archive&c=Novel';?>"
+                                style="margin-left: 10px;background-color: #3c554c; align-items: center; border-radius: 10px; display:flex; justify-content:center;box-shadow:5px 5px 5px rgba(0,0,0,0.8)">
+                                <button style="width: 100%; border: none;background-color: transparent; color: white; cursor: pointer; padding:10px;">
+                                    Archive
+                                </button>
+                            </a>
+                          
+                        </div>
                       
                 </div>
 
-            
+       <div class="asd" id="asd" style="width:100%;height:100vh; top:0; left:0;
+         position:absolute; display:none; justify-content:center;align-items:center;
+          font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; background-color:rgba(0, 0, 0, 0.7);">
+        
+                
+                
+                <form method="post" action="fnc/approved.php" class="" style="display: flex; flex-direction:column; justify-content:center; align-items:center; width: 35%;height:300px; background-color:white; padding:10px">
+                    <div class="" style="display: flex;justify-content:end; width:100%;margin-top:-40px; margin-bottom:20px">
+                        <i class="fa-solid fa-circle-xmark" style="font-size: 25px"></i>
+                    </div>
+                    <i class="fa-solid fa-circle-exclamation" style="font-size: 70px;"></i>
+                    <p>Are you sure you want to</p>
+                    <p>approved this book ?</p>
+                    <input type="hidden" id="ids" name="ids" value="123">
+                    <div class="" style="display: flex; width: 80%;justify-content:space-around">
+                        <button type="submit" name="Cancel" style="border:none; padding:5px; background-color:brown; color:white; width:100px">Cancel</button>
+                        <button type="submit" name="Approve" style="border:none; padding:5px; background-color:green; color:white; width:100px">Approve</button>
+                    </div>
+                </form>
+           
+        </div>
+    </div>
 
         </article>
-    </div>
+        <?php
+    
+    ?>
+
+    
     <script>
+       
     function navigateToLink() {
       const select = document.getElementById('linkSelect');
       const url = select.value;
@@ -323,6 +419,19 @@
         window.location.href = url; // Redirects to the selected URL
       }
     }
+     function handleClick(dataId,dataName) {
+    document.getElementById("asd").style.display = "flex";
+
+     const ids = document.getElementById("ids").value = dataId;
+
+
+    
+        console.log(ids);
+  
+   
+    // Add your logic here
+  }
+
   </script>
 <?php  
 }
